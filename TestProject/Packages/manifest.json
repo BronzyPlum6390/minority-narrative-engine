@@ -1,4 +1,7 @@
 {
+  "testables": [
+    "com.minoritynarrative.engine"
+  ],
   "dependencies": {
     "com.minoritynarrative.engine": "file:../../com.minoritynarrative.engine",
     "com.unity.test-framework": "1.4.5",

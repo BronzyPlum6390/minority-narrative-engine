@@ -16,7 +16,7 @@ jobs:
         uses: game-ci/unity-request-activation-file@v2
 
       - name: Upload Unity activation file as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Unity_v${{ steps.getalf.outputs.unityVersion }}.alf
           path: ${{ steps.getalf.outputs.filePath }}

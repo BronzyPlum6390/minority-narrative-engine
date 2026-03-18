@@ -126,9 +126,9 @@ namespace MinorityNarrativeEngine
             flags = new List<string>(_flags),
             visitedNodes = new List<string>(_visitedNodes),
             choiceHistory = new List<string>(choiceHistory),
-            variables = new Dictionary<string, float>(_variables),
-            relationships = new Dictionary<string, float>(_relationships),
-            communityScores = new Dictionary<string, float>(_communityScores)
+            variables = ToSerializableList(_variables),
+            relationships = ToSerializableList(_relationships),
+            communityScores = ToSerializableList(_communityScores)
         };
 
         public void RestoreSnapshot(SessionSnapshot snap)
@@ -136,13 +136,29 @@ namespace MinorityNarrativeEngine
             storyTitle = snap.storyTitle;
             currentNodeId = snap.currentNodeId;
             collectivityScore = snap.collectivityScore;
-            _flags.Clear(); foreach (var f in snap.flags) _flags.Add(f);
-            _visitedNodes.Clear(); foreach (var v in snap.visitedNodes) _visitedNodes.Add(v);
-            choiceHistory.Clear(); choiceHistory.AddRange(snap.choiceHistory);
-            _variables.Clear(); foreach (var kv in snap.variables) _variables[kv.Key] = kv.Value;
-            _relationships.Clear(); foreach (var kv in snap.relationships) _relationships[kv.Key] = kv.Value;
-            _communityScores.Clear(); foreach (var kv in snap.communityScores) _communityScores[kv.Key] = kv.Value;
+            _flags.Clear(); if (snap.flags != null) foreach (var f in snap.flags) _flags.Add(f);
+            _visitedNodes.Clear(); if (snap.visitedNodes != null) foreach (var v in snap.visitedNodes) _visitedNodes.Add(v);
+            choiceHistory.Clear(); if (snap.choiceHistory != null) choiceHistory.AddRange(snap.choiceHistory);
+            _variables.Clear(); if (snap.variables != null) foreach (var p in snap.variables) _variables[p.key] = p.value;
+            _relationships.Clear(); if (snap.relationships != null) foreach (var p in snap.relationships) _relationships[p.key] = p.value;
+            _communityScores.Clear(); if (snap.communityScores != null) foreach (var p in snap.communityScores) _communityScores[p.key] = p.value;
         }
+
+        private static List<StringFloatPair> ToSerializableList(Dictionary<string, float> dict)
+        {
+            var list = new List<StringFloatPair>(dict.Count);
+            foreach (var kv in dict)
+                list.Add(new StringFloatPair { key = kv.Key, value = kv.Value });
+            return list;
+        }
+    }
+
+    /// <summary>Serializable key-value pair for float maps (JsonUtility does not support Dictionary).</summary>
+    [Serializable]
+    public class StringFloatPair
+    {
+        public string key;
+        public float value;
     }
 
     /// <summary>Serializable snapshot of a StorySession for save/load.</summary>
@@ -155,8 +171,8 @@ namespace MinorityNarrativeEngine
         public List<string> flags;
         public List<string> visitedNodes;
         public List<string> choiceHistory;
-        public Dictionary<string, float> variables;
-        public Dictionary<string, float> relationships;
-        public Dictionary<string, float> communityScores;
+        public List<StringFloatPair> variables;
+        public List<StringFloatPair> relationships;
+        public List<StringFloatPair> communityScores;
     }
 }

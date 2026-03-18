@@ -1,6 +1,6 @@
 {
   "name": "com.minoritynarrative.engine",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "displayName": "Minority Narrative Engine Toolkit",
   "description": "Cultural storytelling tools and templates for indie devs from underrepresented communities. Supports Black American, Indigenous, Southeast Asian, and Latinx narrative contexts with built-in code-switching, honorifics, collective/individual choice framing, and community relationship systems.",
   "unity": "2022.3",

@@ -1,0 +1,77 @@
+name: Unity Tests
+
+# Runs on a self-hosted macOS runner (troy-mac) where Unity is installed and activated.
+# game-ci Docker is not used because it doesn't support macOS runners.
+# Unity is invoked directly via command line in batch/test mode.
+
+on:
+  push:
+    branches: [main, v2-dev]
+  pull_request:
+    branches: [main, v2-dev]
+
+jobs:
+  test:
+    name: Run EditMode Tests
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Find Unity executable
+        id: unity
+        run: |
+          UNITY=$(ls /Applications/Unity/Hub/Editor/ | sort -V | tail -1)
+          UNITY_PATH="/Applications/Unity/Hub/Editor/$UNITY/Unity.app/Contents/MacOS/Unity"
+          echo "path=$UNITY_PATH" >> $GITHUB_OUTPUT
+          echo "Found Unity: $UNITY_PATH"
+
+      - name: Run EditMode Tests
+        run: |
+          RESULTS_DIR="$GITHUB_WORKSPACE/TestResults"
+          mkdir -p "$RESULTS_DIR"
+
+          "${{ steps.unity.outputs.path }}" \
+            -batchmode \
+            -nographics \
+            -silent-crashes \
+            -logFile "$RESULTS_DIR/unity.log" \
+            -projectPath "$GITHUB_WORKSPACE/TestProject" \
+            -runTests \
+            -testPlatform editmode \
+            -testResults "$RESULTS_DIR/results.xml" \
+            -enableCodeCoverage \
+            -coverageResultsPath "$RESULTS_DIR/coverage" \
+            -coverageOptions "generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+MinorityNarrativeEngine.Runtime"
+
+          EXIT_CODE=$?
+          echo "Unity exited with code $EXIT_CODE"
+          cat "$RESULTS_DIR/unity.log" | tail -50
+          exit $EXIT_CODE
+
+      - name: Parse test results
+        if: always()
+        run: |
+          RESULTS="$GITHUB_WORKSPACE/TestResults/results.xml"
+          if [ -f "$RESULTS" ]; then
+            TOTAL=$(grep -o 'total="[0-9]*"' "$RESULTS" | grep -o '[0-9]*' | head -1)
+            PASSED=$(grep -o 'passed="[0-9]*"' "$RESULTS" | grep -o '[0-9]*' | head -1)
+            FAILED=$(grep -o 'failed="[0-9]*"' "$RESULTS" | grep -o '[0-9]*' | head -1)
+            echo "Tests: $TOTAL total, $PASSED passed, $FAILED failed"
+            if [ "$FAILED" -gt 0 ]; then
+              grep -A5 'result="Failed"' "$RESULTS" | head -40
+            fi
+          else
+            echo "No results file found — check unity.log"
+          fi
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: TestResults/
+          retention-days: 14

@@ -1,0 +1,64 @@
+name: Unity Tests
+
+on:
+  push:
+    branches: [main, v2-dev]
+  pull_request:
+    branches: [main, v2-dev]
+
+jobs:
+  test:
+    name: Run EditMode Tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unityVersion:
+          - 2022.3.0f1
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Cache Unity Library
+        uses: actions/cache@v3
+        with:
+          path: TestProject/Library
+          key: Library-TestProject-${{ matrix.unityVersion }}-${{ hashFiles('com.minoritynarrative.engine/**') }}
+          restore-keys: |
+            Library-TestProject-${{ matrix.unityVersion }}-
+            Library-TestProject-
+
+      - name: Run EditMode Tests
+        uses: game-ci/unity-test-runner@v4
+        id: tests
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: TestProject
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: editmode
+          artifactsPath: TestResults
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: EditMode Test Results
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+MinorityNarrativeEngine.Runtime'
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-results-${{ matrix.unityVersion }}
+          path: TestResults
+          retention-days: 14
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: coverage-report-${{ matrix.unityVersion }}
+          path: TestProject/CodeCoverage
+          retention-days: 14

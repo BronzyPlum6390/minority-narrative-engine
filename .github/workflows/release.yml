@@ -1,0 +1,95 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  release:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Extract version from package.json
+        id: pkg_version
+        run: |
+          PKG_VERSION=$(python3 -c "import json; d=json.load(open('com.minoritynarrative.engine/package.json')); print(d['version'])")
+          echo "PKG_VERSION=$PKG_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Validate tag matches package version
+        run: |
+          TAG="${{ steps.version.outputs.VERSION }}"
+          PKG="v${{ steps.pkg_version.outputs.PKG_VERSION }}"
+          if [ "$TAG" != "$PKG" ]; then
+            echo "Tag $TAG does not match package.json version $PKG"
+            exit 1
+          fi
+
+      - name: Build release archive
+        run: |
+          mkdir -p release_build
+          cp -r com.minoritynarrative.engine release_build/
+          cp README.md release_build/
+          cp MINORITY_NARRATIVE_ENGINE.md release_build/
+          cd release_build
+          zip -r ../minority-narrative-engine-${{ steps.version.outputs.VERSION }}.zip .
+          cd ..
+          tar -czf minority-narrative-engine-${{ steps.version.outputs.VERSION }}.tar.gz -C release_build .
+
+      - name: Generate changelog from git log
+        id: changelog
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREV_TAG" ]; then
+            CHANGES=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s" --no-merges)
+          else
+            CHANGES=$(git log --pretty=format:"- %s" --no-merges | head -30)
+          fi
+          echo "CHANGES<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          name: Minority Narrative Engine ${{ steps.version.outputs.VERSION }}
+          body: |
+            ## What's Changed
+
+            ${{ steps.changelog.outputs.CHANGES }}
+
+            ## Install via Unity Package Manager
+
+            Add to your `Packages/manifest.json`:
+            ```json
+            {
+              "dependencies": {
+                "com.minoritynarrative.engine": "https://github.com/BronzyPlum6390/minority-narrative-engine.git?path=com.minoritynarrative.engine#${{ steps.version.outputs.VERSION }}"
+              }
+            }
+            ```
+
+            ## Downloads
+
+            - `.zip` — Full package including docs and samples
+            - `.tar.gz` — Same, in tarball format
+
+            See [MINORITY_NARRATIVE_ENGINE.md](https://github.com/BronzyPlum6390/minority-narrative-engine/blob/main/MINORITY_NARRATIVE_ENGINE.md) for full documentation.
+          files: |
+            minority-narrative-engine-${{ steps.version.outputs.VERSION }}.zip
+            minority-narrative-engine-${{ steps.version.outputs.VERSION }}.tar.gz
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.VERSION, '-') }}

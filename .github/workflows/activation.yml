@@ -1,23 +1,22 @@
 name: Unity License Activation
 
-# Run this workflow ONCE to get your Unity license.
-# After activation is complete, delete this workflow or leave it — it won't run again unless triggered.
+# This workflow is no longer needed for Unity Personal licenses.
+# game-ci v4+ handles authentication automatically with just
+# UNITY_EMAIL and UNITY_PASSWORD secrets.
+#
+# For Unity Pro, follow: https://game.ci/docs/github/activation
+#
+# This file can be deleted.
 
 on:
   workflow_dispatch: {}
 
 jobs:
-  activation:
-    name: Request Unity License File
+  info:
     runs-on: ubuntu-latest
     steps:
-      - name: Request Unity activation file (.alf)
-        id: getalf
-        uses: game-ci/unity-request-activation-file@v2
-
-      - name: Upload Unity activation file as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Unity_v${{ steps.getalf.outputs.unityVersion }}.alf
-          path: ${{ steps.getalf.outputs.filePath }}
-          retention-days: 1
+      - name: Activation info
+        run: |
+          echo "For Unity Personal (free), no manual activation needed."
+          echo "Just set UNITY_EMAIL and UNITY_PASSWORD in repo secrets."
+          echo "See: https://game.ci/docs/github/activation"

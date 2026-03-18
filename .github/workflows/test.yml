@@ -1,5 +1,18 @@
 name: Unity Tests
 
+# NOTE: Unity EditMode tests require a self-hosted runner with Unity installed
+# and activated, OR a Unity Pro serial (UNITY_SERIAL secret).
+#
+# Unity Personal licenses are machine-bound and cannot activate on cloud runners.
+#
+# To use this workflow:
+#   Option A (self-hosted): Set up a self-hosted runner on your machine:
+#     https://docs.github.com/en/actions/hosting-your-own-runners/adding-self-hosted-runners
+#     Then change `runs-on: ubuntu-latest` to `runs-on: self-hosted`
+#
+#   Option B (Unity Pro): Add UNITY_SERIAL secret with your Pro serial key.
+#     Remove the `runs-on` change — cloud runners will work.
+
 on:
   push:
     branches: [main, v2-dev]
@@ -9,7 +22,8 @@ on:
 jobs:
   test:
     name: Run EditMode Tests
-    runs-on: ubuntu-latest
+    # Change to self-hosted if using Option A
+    runs-on: self-hosted
     strategy:
       fail-fast: false
       matrix:

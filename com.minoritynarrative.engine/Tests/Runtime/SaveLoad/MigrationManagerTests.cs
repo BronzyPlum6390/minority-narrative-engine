@@ -33,9 +33,9 @@ namespace MinorityNarrativeEngine.Tests
                     flags = new System.Collections.Generic.List<string>(),
                     visitedNodes = new System.Collections.Generic.List<string>(),
                     choiceHistory = new System.Collections.Generic.List<string>(),
-                    variables = new System.Collections.Generic.Dictionary<string, float>(),
-                    relationships = new System.Collections.Generic.Dictionary<string, float>(),
-                    communityScores = new System.Collections.Generic.Dictionary<string, float>()
+                    variables = new System.Collections.Generic.List<StringFloatPair>(),
+                    relationships = new System.Collections.Generic.List<StringFloatPair>(),
+                    communityScores = new System.Collections.Generic.List<StringFloatPair>()
                 }
             };
             bool migrated = MigrationManager.Migrate(data);
@@ -53,9 +53,9 @@ namespace MinorityNarrativeEngine.Tests
                     flags = new System.Collections.Generic.List<string>(),
                     visitedNodes = new System.Collections.Generic.List<string>(),
                     choiceHistory = new System.Collections.Generic.List<string>(),
-                    variables = new System.Collections.Generic.Dictionary<string, float>(),
-                    relationships = new System.Collections.Generic.Dictionary<string, float>(),
-                    communityScores = new System.Collections.Generic.Dictionary<string, float>()
+                    variables = new System.Collections.Generic.List<StringFloatPair>(),
+                    relationships = new System.Collections.Generic.List<StringFloatPair>(),
+                    communityScores = new System.Collections.Generic.List<StringFloatPair>()
                 }
             };
             MigrationManager.Migrate(data);

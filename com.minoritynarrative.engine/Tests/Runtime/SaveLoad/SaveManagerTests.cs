@@ -1,5 +1,7 @@
 using NUnit.Framework;
 using System.IO;
+using UnityEngine;
+using UnityEngine.TestTools;
 using MinorityNarrativeEngine;
 using MinorityNarrativeEngine.SaveLoad;
 
@@ -127,10 +129,11 @@ namespace MinorityNarrativeEngine.Tests
         {
             // Write garbage to the slot path
             string path = Path.Combine(
-                UnityEngine.Application.persistentDataPath,
+                Application.persistentDataPath,
                 $"mne_save_slot_0.json");
             File.WriteAllText(path, "{ this is not valid json {{{{");
 
+            LogAssert.Expect(LogType.Error, new System.Text.RegularExpressions.Regex(@"\[MNE\] Failed to load save slot 0:.*"));
             var loaded = SaveManager.Load(0);
             Assert.IsNull(loaded);
 

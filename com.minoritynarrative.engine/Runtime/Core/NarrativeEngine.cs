@@ -155,6 +155,36 @@ namespace MinorityNarrativeEngine
             else EmitEvent(next);
         }
 
+        /// <summary>
+        /// Resumes a story from a previously saved StorySession.
+        /// The story JSON must already be assigned — only the session state is restored.
+        /// </summary>
+        public void ResumeFromSession(StorySession savedSession)
+        {
+            if (storyJson == null)
+            {
+                Debug.LogError("[MNE] ResumeFromSession: storyJson is not assigned.");
+                return;
+            }
+
+            _graph = StoryLoader.LoadFromTextAsset(storyJson);
+
+            _session = savedSession;
+
+            _activeContext = null;
+            if (culturalContextRegistry != null && !string.IsNullOrEmpty(_graph.culturalContext))
+            {
+                culturalContextRegistry.Initialize();
+                _activeContext = culturalContextRegistry.Get(_graph.culturalContext);
+            }
+
+            _dialogueSystem = new DialogueSystem();
+            _dialogueSystem.Initialize(_graph, _session, _activeContext, characterRegistry);
+
+            OnStoryBegin?.Invoke();
+            EmitEvent(_dialogueSystem.StepToNode(_session.currentNodeId ?? _graph.startNodeId));
+        }
+
         /// <summary>Enable or disable code-switching at runtime (e.g., accessibility toggle).</summary>
         public void SetCodeSwitching(bool enabled)
         {

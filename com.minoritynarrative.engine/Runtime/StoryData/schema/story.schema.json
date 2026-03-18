@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "com.minoritynarrative.engine/story",
+  "title": "Minority Narrative Engine Story",
+  "description": "Schema for .story.json files used by the Minority Narrative Engine toolkit.",
+  "type": "object",
+  "required": ["title", "startNodeId", "nodes"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Human-readable story title displayed in the editor and UI."
+    },
+    "description": {
+      "type": "string",
+      "description": "Short story synopsis shown in the story browser."
+    },
+    "author": {
+      "type": "string",
+      "description": "Author credit displayed in-game."
+    },
+    "version": {
+      "type": "string",
+      "description": "Story version string. Increment when you add/remove nodes for save-game compatibility."
+    },
+    "culturalContext": {
+      "type": "string",
+      "description": "Primary cultural context key matching a CulturalContextBase asset (e.g. 'black_american', 'indigenous', 'southeast_asian', 'latinx').",
+      "examples": ["black_american", "indigenous", "southeast_asian", "latinx"]
+    },
+    "startNodeId": {
+      "type": "string",
+      "description": "ID of the first node to display when the story begins."
+    },
+    "nodes": {
+      "type": "array",
+      "description": "All nodes in the story. Order does not matter — nodes are looked up by id.",
+      "items": { "$ref": "#/definitions/StoryNode" }
+    }
+  },
+  "definitions": {
+    "StoryNode": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for this node. Used by choices and nextNodeId to reference this beat."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["dialogue", "narration", "choice_prompt", "community_event", "end"],
+          "default": "dialogue",
+          "description": "Node type. 'end' marks a story ending and triggers OnStoryComplete."
+        },
+        "speakerId": {
+          "type": "string",
+          "description": "Character ID of the speaker. Must match a CharacterProfile.characterId. Leave empty for narration."
+        },
+        "text": {
+          "type": "string",
+          "description": "Dialogue or narration text. Supports tokens: {honorific.TOKEN}, {name}. Code-switching is applied automatically based on cultural context."
+        },
+        "displayDuration": {
+          "type": "number",
+          "default": -1,
+          "description": "Seconds to display before auto-advancing. -1 means wait for player input."
+        },
+        "culturalTags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Oral tradition pattern roles and other cultural tags. E.g. 'call_and_response', 'elder_wisdom', 'dicho'."
+        },
+        "collectiveFrame": {
+          "type": "string",
+          "enum": ["individual", "collective", "both", "none"],
+          "default": "none",
+          "description": "Hints to the UI how to frame this beat on the individual/collective spectrum."
+        },
+        "choices": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Choice" },
+          "description": "Choices available to the player from this node. If empty, the node advances linearly via nextNodeId."
+        },
+        "nextNodeId": {
+          "type": "string",
+          "description": "ID of the next node for linear (no-choice) flow. Ignored if choices is non-empty."
+        },
+        "triggers": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/NodeTrigger" }
+        },
+        "entryConditions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/NodeCondition" }
+        }
+      }
+    },
+    "Choice": {
+      "type": "object",
+      "required": ["text", "targetNodeId"],
+      "properties": {
+        "text": { "type": "string", "description": "Button text shown to the player." },
+        "targetNodeId": { "type": "string", "description": "Node to navigate to when selected." },
+        "communityImpact": { "type": "string", "description": "One-line description of how this choice affects the community." },
+        "individualImpact": { "type": "string", "description": "One-line description of how this choice affects the protagonist." },
+        "collectivityDelta": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1,
+          "description": "How much this choice moves the collectivity score. +1 = fully collective, -1 = fully individual."
+        },
+        "conditions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/NodeCondition" }
+        },
+        "triggers": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/NodeTrigger" }
+        }
+      }
+    },
+    "NodeTrigger": {
+      "type": "object",
+      "required": ["type", "key"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["set_flag", "clear_flag", "adjust_relationship", "adjust_community", "fire_event", "set_variable"]
+        },
+        "key": { "type": "string" },
+        "value": { "type": "number" },
+        "relatedCharacterId": { "type": "string" }
+      }
+    },
+    "NodeCondition": {
+      "type": "object",
+      "required": ["type", "key", "op"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["flag", "relationship", "community", "collectivity", "visited"]
+        },
+        "key": { "type": "string" },
+        "op": {
+          "type": "string",
+          "enum": ["eq", "neq", "gt", "gte", "lt", "lte", "set", "unset"]
+        },
+        "value": { "type": "number" },
+        "relatedCharacterId": { "type": "string" }
+      }
+    }
+  }
+}

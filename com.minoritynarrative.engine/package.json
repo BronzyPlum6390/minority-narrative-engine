@@ -1,0 +1,31 @@
+{
+  "name": "com.minoritynarrative.engine",
+  "version": "0.1.0",
+  "displayName": "Minority Narrative Engine Toolkit",
+  "description": "Cultural storytelling tools and templates for indie devs from underrepresented communities. Supports Black American, Indigenous, Southeast Asian, and Latinx narrative contexts with built-in code-switching, honorifics, collective/individual choice framing, and community relationship systems.",
+  "unity": "2022.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "https://github.com/minoritynarrative/engine",
+  "changelogUrl": "https://github.com/minoritynarrative/engine/CHANGELOG.md",
+  "licensesUrl": "https://github.com/minoritynarrative/engine/LICENSE.md",
+  "keywords": [
+    "narrative",
+    "dialogue",
+    "cultural",
+    "storytelling",
+    "indie",
+    "diversity"
+  ],
+  "author": {
+    "name": "Minority Narrative Engine",
+    "email": "hello@minoritynarrative.dev",
+    "url": "https://minoritynarrative.dev"
+  },
+  "samples": [
+    {
+      "displayName": "The Last Ride of Isaiah Free",
+      "description": "A Black American western demo story. Isaiah Free, a freedman bounty hunter in 1870s Texas, faces a choice between personal revenge and protecting his community.",
+      "path": "Samples~/IsaiahFree"
+    }
+  ]
+}

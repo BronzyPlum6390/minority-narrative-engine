@@ -1,0 +1,527 @@
+{
+  "$schema": "../../Runtime/StoryData/schema/story.schema.json",
+  "title": "The Last Ride of Isaiah Free",
+  "description": "1873, Texas. Isaiah Free — freedman, bounty hunter, survivor — rides into the town of Redrock with one name on his list: Colonel Harlan Vance, the man who sold his family into bondage and kept on living like it was nothing. But Freedmen's Town, the Black settlement Isaiah once called home, is surrounded, and the people who raised him are running out of time.",
+  "author": "Minority Narrative Engine Demo",
+  "version": "1.0",
+  "culturalContext": "black_american",
+  "startNodeId": "open_road",
+
+  "nodes": [
+
+    {
+      "id": "open_road",
+      "type": "narration",
+      "text": "The Texas flatlands stretch out like they got no end and no beginning. Dust kicks up behind you all the way from Beaumont. You been riding three days on the scent of one man. The wanted poster is worn soft in your coat pocket — you don't need to look at it no more. You know that face better than your own.",
+      "displayDuration": -1,
+      "nextNodeId": "open_road_2"
+    },
+
+    {
+      "id": "open_road_2",
+      "type": "narration",
+      "text": "1873. Eight years since Emancipation and freedom still got more sharp edges than smooth ones. You ride free. You hunt men for pay. But this one — Colonel Harlan Vance — you'd track to the edge of the earth for free.",
+      "nextNodeId": "juniper_encounter"
+    },
+
+    {
+      "id": "juniper_encounter",
+      "type": "dialogue",
+      "speakerId": "juniper_roots",
+      "text": "You Isaiah Free?",
+      "displayDuration": -1,
+      "nextNodeId": "isaiah_yes"
+    },
+
+    {
+      "id": "isaiah_yes",
+      "type": "dialogue",
+      "speakerId": "isaiah_free",
+      "text": "Depends who's asking.",
+      "nextNodeId": "juniper_intro"
+    },
+
+    {
+      "id": "juniper_intro",
+      "type": "dialogue",
+      "speakerId": "juniper_roots",
+      "text": "My name is Juniper Roots. Comanche Nation. I've been watching you ride since Medina Creek. Man riding like that's either being chased or chasing something that won't end well for him.",
+      "nextNodeId": "juniper_warning"
+    },
+
+    {
+      "id": "juniper_warning",
+      "type": "dialogue",
+      "speakerId": "juniper_roots",
+      "text": "Vance left Redrock two nights ago. Burned three buildings in Freedmen's Town on his way out. Said it was a warning. Your people are still there, Isaiah. Ma Ellen and the rest. Vance's men are circling.",
+      "culturalTags": ["elder_wisdom"],
+      "nextNodeId": "first_choice",
+      "triggers": [
+        { "type": "set_flag", "key": "heard_freedens_town_danger" }
+      ]
+    },
+
+    {
+      "id": "first_choice",
+      "type": "choice_prompt",
+      "speakerId": "isaiah_free",
+      "text": "The weight of it settles in your chest like a stone. Vance is two days ahead. Freedmen's Town is half a day behind.",
+      "collectiveFrame": "both",
+      "choices": [
+        {
+          "text": "Ride for Freedmen's Town. The community comes first.",
+          "targetNodeId": "ride_to_community",
+          "communityImpact": "Freedmen's Town gets your protection — it may survive.",
+          "individualImpact": "Vance gains distance. He may escape justice entirely.",
+          "collectivityDelta": 0.8,
+          "triggers": [
+            { "type": "set_flag", "key": "chose_community_first" },
+            { "type": "adjust_community", "key": "freedens_town", "value": 20 }
+          ]
+        },
+        {
+          "text": "Ride for Vance. He's what all this has always been about.",
+          "targetNodeId": "ride_for_vance",
+          "communityImpact": "Freedmen's Town faces Vance's men without you.",
+          "individualImpact": "You close the distance on Vance. Justice — or revenge — is in reach.",
+          "collectivityDelta": -0.8,
+          "triggers": [
+            { "type": "set_flag", "key": "chose_vance_first" },
+            { "type": "adjust_community", "key": "freedens_town", "value": -15 }
+          ]
+        },
+        {
+          "text": "Ask Juniper what she'd do.",
+          "targetNodeId": "ask_juniper_advice",
+          "communityImpact": "Delay. Every hour costs something.",
+          "individualImpact": "You might learn something you didn't know you needed.",
+          "collectivityDelta": 0.2
+        }
+      ]
+    },
+
+    {
+      "id": "ask_juniper_advice",
+      "type": "dialogue",
+      "speakerId": "juniper_roots",
+      "text": "My people have a saying — a man who chases the wolf that bit him, while his family sleeps in the forest, buries two griefs instead of one.",
+      "culturalTags": ["elder_wisdom"],
+      "nextNodeId": "juniper_advice_2",
+      "triggers": [
+        { "type": "adjust_relationship", "key": "isaiah_free", "relatedCharacterId": "juniper_roots", "value": 15 }
+      ]
+    },
+
+    {
+      "id": "juniper_advice_2",
+      "type": "dialogue",
+      "speakerId": "juniper_roots",
+      "text": "But I also know what it is to carry something that won't let you sleep. Both paths are real, Isaiah. Just know: the land remembers what you choose here.",
+      "culturalTags": ["land_teaching"],
+      "nextNodeId": "first_choice_after_advice"
+    },
+
+    {
+      "id": "first_choice_after_advice",
+      "type": "choice_prompt",
+      "speakerId": "isaiah_free",
+      "text": "You sit with her words. The sun is getting low.",
+      "collectiveFrame": "both",
+      "choices": [
+        {
+          "text": "Ride for Freedmen's Town.",
+          "targetNodeId": "ride_to_community",
+          "communityImpact": "You go back for your people.",
+          "individualImpact": "Vance keeps riding.",
+          "collectivityDelta": 0.8,
+          "triggers": [
+            { "type": "set_flag", "key": "chose_community_first" },
+            { "type": "adjust_community", "key": "freedens_town", "value": 20 }
+          ]
+        },
+        {
+          "text": "Ride for Vance. You'll come back for them after.",
+          "targetNodeId": "ride_for_vance",
+          "communityImpact": "You'll come back. You're telling yourself you'll come back.",
+          "individualImpact": "Vance is within reach.",
+          "collectivityDelta": -0.6,
+          "triggers": [
+            { "type": "set_flag", "key": "chose_vance_first" },
+            { "type": "adjust_community", "key": "freedens_town", "value": -10 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "ride_to_community",
+      "type": "narration",
+      "text": "You turn your horse around. Juniper rides beside you without a word. She doesn't need to say it. By nightfall, the torchlight of Freedmen's Town comes into view over the hill — and so do the silhouettes of six men on horseback at the edge of the settlement.",
+      "nextNodeId": "maellen_greeting"
+    },
+
+    {
+      "id": "maellen_greeting",
+      "type": "dialogue",
+      "speakerId": "ma_ellen",
+      "text": "Isaiah Free. Lord have mercy. Boy, I knew you'd come back.",
+      "culturalTags": ["testimony"],
+      "nextNodeId": "maellen_situation"
+    },
+
+    {
+      "id": "maellen_situation",
+      "type": "dialogue",
+      "speakerId": "ma_ellen",
+      "text": "Vance's men say they got a deed to this land. Some paper from a county judge who never set foot here. Twenty-three families, Isaiah. This is our home. We built every board of it.",
+      "culturalTags": ["testimony"],
+      "collectiveFrame": "collective",
+      "nextNodeId": "community_choice",
+      "triggers": [
+        { "type": "set_flag", "key": "heard_deed_threat" }
+      ]
+    },
+
+    {
+      "id": "community_choice",
+      "type": "choice_prompt",
+      "speakerId": "isaiah_free",
+      "text": "You look around at the faces you grew up with. Old Deacon Harris. The Washington children. Sara who teaches school in the church. They're watching you like you got an answer.",
+      "collectiveFrame": "collective",
+      "choices": [
+        {
+          "text": "\"We stand our ground. This is your land and I'll die saying so.\"",
+          "targetNodeId": "stand_ground",
+          "communityImpact": "The community rallies. Risk of violence is high.",
+          "individualImpact": "You plant your flag. No turning back.",
+          "collectivityDelta": 0.9,
+          "triggers": [
+            { "type": "set_flag", "key": "chose_stand_ground" },
+            { "type": "adjust_community", "key": "freedens_town", "value": 25 },
+            { "type": "adjust_relationship", "key": "isaiah_free", "relatedCharacterId": "ma_ellen", "value": 20 }
+          ]
+        },
+        {
+          "text": "\"I know where Vance is. I go get him, he can't send more men.\"",
+          "targetNodeId": "negotiate_leave",
+          "communityImpact": "Leaves the community exposed while you hunt Vance.",
+          "individualImpact": "Your personal mission and the community's salvation become the same road.",
+          "collectivityDelta": 0.1,
+          "triggers": [
+            { "type": "set_flag", "key": "chose_hunt_vance_for_community" }
+          ]
+        },
+        {
+          "text": "\"We should move. Find somewhere safer. I'll cover the retreat.\"",
+          "targetNodeId": "suggest_retreat",
+          "communityImpact": "People lose their homes but survive.",
+          "individualImpact": "You protect lives. But something is lost that can't be rebuilt.",
+          "collectivityDelta": 0.5,
+          "triggers": [
+            { "type": "adjust_community", "key": "freedens_town", "value": -30 }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id": "stand_ground",
+      "type": "dialogue",
+      "speakerId": "ma_ellen",
+      "text": "That's what I needed to hear, baby. That is exactly what I needed to hear.",
+      "culturalTags": ["call_and_response"],
+      "nextNodeId": "stand_ground_2"
+    },
+
+    {
+      "id": "stand_ground_2",
+      "type": "narration",
+      "text": "Juniper Roots moves to your left flank without being asked. The community men — farmers and a blacksmith and a preacher — pick up what they have. The riders at the edge of the settlement don't move. They were expecting fear. They're looking at something else now.",
+      "nextNodeId": "vance_men_standoff"
+    },
+
+    {
+      "id": "vance_men_standoff",
+      "type": "dialogue",
+      "speakerId": "vance_lieutenant",
+      "text": "This land is under legal deed. You people have until sunrise to vacate.",
+      "nextNodeId": "isaiah_standoff_response"
+    },
+
+    {
+      "id": "isaiah_standoff_response",
+      "type": "dialogue",
+      "speakerId": "isaiah_free",
+      "text": "Y'all are gonna need more than six men and a crooked deed. Go back to Vance and tell him Isaiah Free is waiting. Tell him I know every court, every newspaper, and every U.S. Marshal between here and Washington. Tell him this land is spoken for.",
+      "culturalTags": ["signifying"],
+      "collectiveFrame": "collective",
+      "nextNodeId": "standoff_outcome"
+    },
+
+    {
+      "id": "standoff_outcome",
+      "type": "narration",
+      "text": "They ride off. Not because they're scared of six bullets. Because men like that depend on isolation — on nobody seeing, nobody knowing. You just made Freedmen's Town visible. That's a different kind of protection.",
+      "nextNodeId": "maellen_aftermath",
+      "triggers": [
+        { "type": "set_flag", "key": "community_survived" },
+        { "type": "adjust_community", "key": "freedens_town", "value": 30 }
+      ]
+    },
+
+    {
+      "id": "maellen_aftermath",
+      "type": "dialogue",
+      "speakerId": "ma_ellen",
+      "text": "Vance is still out there, Isaiah. I know that. This ain't finished. But tonight — tonight we stand.",
+      "culturalTags": ["testimony"],
+      "nextNodeId": "final_choice_community"
+    },
+
+    {
+      "id": "final_choice_community",
+      "type": "choice_prompt",
+      "speakerId": "isaiah_free",
+      "text": "Ma Ellen holds your face in her hands the way she used to when you were a boy. You can still ride. Vance has maybe a two-day lead now.",
+      "collectiveFrame": "both",
+      "choices": [
+        {
+          "text": "Stay in Freedmen's Town. Help them build what they need.",
+          "targetNodeId": "ending_stay",
+          "communityImpact": "Freedmen's Town has its best chance of surviving and growing.",
+          "individualImpact": "Vance lives. But maybe that's not the only thing that lasts.",
+          "collectivityDelta": 1.0
+        },
+        {
+          "text": "Ride at dawn. Finish what you started.",
+          "targetNodeId": "ending_ride_after_community",
+          "communityImpact": "You've secured them enough time to find their own footing.",
+          "individualImpact": "You keep your promise to yourself and to the family you lost.",
+          "collectivityDelta": -0.2
+        }
+      ]
+    },
+
+    {
+      "id": "ride_for_vance",
+      "type": "narration",
+      "text": "You ride hard for two days. The trail is clear — Vance isn't running scared, he's running confident. He burned those buildings because he thought there was nobody left to answer for it.",
+      "nextNodeId": "vance_confrontation_approach"
+    },
+
+    {
+      "id": "vance_confrontation_approach",
+      "type": "narration",
+      "text": "You find him in a saloon in the town of Comal, sitting with lawyers and land surveyors, talking about Freedmen's Town like it's already gone.",
+      "nextNodeId": "vance_sees_isaiah",
+      "triggers": [
+        { "type": "set_flag", "key": "found_vance" }
+      ]
+    },
+
+    {
+      "id": "vance_sees_isaiah",
+      "type": "dialogue",
+      "speakerId": "colonel_vance",
+      "text": "Well. Isaiah Freeman. I'll be damned. You actually tracked me down.",
+      "nextNodeId": "isaiah_vance_response"
+    },
+
+    {
+      "id": "isaiah_vance_response",
+      "type": "dialogue",
+      "speakerId": "isaiah_free",
+      "text": "My name is Isaiah Free. You know what I came for.",
+      "nextNodeId": "vance_taunts"
+    },
+
+    {
+      "id": "vance_taunts",
+      "type": "dialogue",
+      "speakerId": "colonel_vance",
+      "text": "Your family? Son, that was business. You want to arrest me, go ahead — half the law in this county owes me money. You want to shoot me, these men'll have you swinging by nightfall.",
+      "nextNodeId": "vance_choice"
+    },
+
+    {
+      "id": "vance_choice",
+      "type": "choice_prompt",
+      "speakerId": "isaiah_free",
+      "text": "Your hand is on your gun. Vance is right — he's insulated, legally. But so is every man who ever thought freedom was something you could buy and sell. You have options.",
+      "collectiveFrame": "individual",
+      "choices": [
+        {
+          "text": "Arrest him. Take him in legally. Make it known.",
+          "targetNodeId": "arrest_vance",
+          "communityImpact": "Sets a precedent. Other freedmen see it can be done through the law.",
+          "individualImpact": "Justice on paper. Not the same as justice in your bones.",
+          "collectivityDelta": 0.6,
+          "triggers": [
+            { "type": "set_flag", "key": "arrested_vance" }
+          ]
+        },
+        {
+          "text": "Draw. End it here.",
+          "targetNodeId": "shoot_vance",
+          "communityImpact": "This doesn't free Freedmen's Town. Vance's men are still circling.",
+          "individualImpact": "It's done. Whether that's enough — only you know.",
+          "collectivityDelta": -0.8,
+          "triggers": [
+            { "type": "set_flag", "key": "shot_vance" }
+          ]
+        },
+        {
+          "text": "Tell him what Freedmen's Town is. What you come from. Let him sit with that.",
+          "targetNodeId": "witness_to_vance",
+          "communityImpact": "No immediate protection. But you refuse to let the story end with his version.",
+          "individualImpact": "You say what was never supposed to be said to men like him.",
+          "collectivityDelta": 0.3
+        }
+      ]
+    },
+
+    {
+      "id": "arrest_vance",
+      "type": "narration",
+      "text": "You show the federal warrant. It's real — you earned it through a U.S. Marshal you pulled out of a river outside of Houston. Vance's lawyers go quiet. He goes quieter. You ride him to the county seat in irons and you don't say a word the whole way.",
+      "nextNodeId": "arrest_vance_reflection"
+    },
+
+    {
+      "id": "arrest_vance_reflection",
+      "type": "dialogue",
+      "speakerId": "isaiah_free",
+      "text": "He'll likely buy his way out in six months. Maybe a year. But today, in front of those men in that saloon, Colonel Harlan Vance was put in irons by a freedman named Isaiah Free. Some things, once they happen, you can't take them back.",
+      "culturalTags": ["signifying"],
+      "nextNodeId": "ending_ride_after_vance"
+    },
+
+    {
+      "id": "shoot_vance",
+      "type": "narration",
+      "text": "It's over in a second. The room goes still. You holster your gun and walk out through the silence. Nobody stops you. Nobody was going to stop you for this. And that, somehow, makes it heavier, not lighter.",
+      "nextNodeId": "shoot_vance_road"
+    },
+
+    {
+      "id": "shoot_vance_road",
+      "type": "dialogue",
+      "speakerId": "isaiah_free",
+      "text": "You ride back toward Freedmen's Town in the dark. You got what you came for. You keep asking yourself why it feels like something is still missing. Maybe that's just what revenge is — a hole that looks like an answer.",
+      "collectiveFrame": "individual",
+      "nextNodeId": "ending_return_hollow"
+    },
+
+    {
+      "id": "witness_to_vance",
+      "type": "dialogue",
+      "speakerId": "isaiah_free",
+      "text": "My mama's name was Clara. My daddy was called Samuel. You sold them at the Galveston docks in 1858, split up, two different auctions, like they were furniture. They had a son. He lived. He remembered. He's standing in front of you right now, and he will be standing here in every story told about you until there's nobody left to tell it.",
+      "culturalTags": ["testimony"],
+      "collectiveFrame": "individual",
+      "nextNodeId": "witness_vance_reaction"
+    },
+
+    {
+      "id": "witness_vance_reaction",
+      "type": "narration",
+      "text": "Vance doesn't say anything. For the first time, you watch a man like him have nowhere to put his eyes. You turn and walk out. Outside, the sky is wide and blue and indifferent, and for the first time in three days, you can breathe all the way down.",
+      "nextNodeId": "ending_ride_after_vance",
+      "triggers": [
+        { "type": "set_flag", "key": "bore_witness" }
+      ]
+    },
+
+    {
+      "id": "suggest_retreat",
+      "type": "dialogue",
+      "speakerId": "ma_ellen",
+      "text": "...",
+      "nextNodeId": "suggest_retreat_2"
+    },
+
+    {
+      "id": "suggest_retreat_2",
+      "type": "narration",
+      "text": "Ma Ellen doesn't argue. She just looks at you for a long moment — not angry, not disappointed. Something older than that. Then she starts telling people to gather what they can carry. You cover the road behind them all night. Everyone gets out safe. The town does not.",
+      "nextNodeId": "retreat_reflection"
+    },
+
+    {
+      "id": "retreat_reflection",
+      "type": "dialogue",
+      "speakerId": "isaiah_free",
+      "text": "They'll build again. People always do. But something about watching those torches go dark behind you — that stays. You protected lives. You tell yourself that's enough. Some nights you almost believe it.",
+      "collectiveFrame": "both",
+      "nextNodeId": "ending_retreat"
+    },
+
+    {
+      "id": "negotiate_leave",
+      "type": "dialogue",
+      "speakerId": "ma_ellen",
+      "text": "You go, then. But Isaiah — come back. That man has taken enough from us. Don't you let him take you too.",
+      "culturalTags": ["elder_wisdom"],
+      "nextNodeId": "vance_confrontation_approach",
+      "triggers": [
+        { "type": "adjust_relationship", "key": "isaiah_free", "relatedCharacterId": "ma_ellen", "value": 10 },
+        { "type": "set_flag", "key": "community_blessing" }
+      ]
+    },
+
+    {
+      "id": "ending_stay",
+      "type": "narration",
+      "text": "You put away the bounty poster. You stay three weeks — then three months. You help build the schoolhouse wall that fire took down. Ma Ellen doesn't say much about it. She just keeps putting a plate at the table for you like you never left. Vance is out there. But so is this.",
+      "nextNodeId": "end_stay_final"
+    },
+
+    {
+      "id": "end_stay_final",
+      "type": "dialogue",
+      "speakerId": "isaiah_free",
+      "text": "Maybe this is what freedom actually looks like when you stop running toward it and start building it instead.",
+      "culturalTags": ["elder_wisdom"],
+      "collectiveFrame": "collective",
+      "nextNodeId": "credits"
+    },
+
+    {
+      "id": "ending_ride_after_community",
+      "type": "narration",
+      "text": "You ride at first light. Behind you, Freedmen's Town is still standing, smoke rising from breakfast fires, children starting their day. You carry that with you all the way to Comal.",
+      "nextNodeId": "vance_confrontation_approach"
+    },
+
+    {
+      "id": "ending_ride_after_vance",
+      "type": "narration",
+      "text": "You point your horse back toward Freedmen's Town. It's a day's ride. You don't know exactly what you'll find. But you know where home is — or where it could be, if you let it.",
+      "nextNodeId": "credits"
+    },
+
+    {
+      "id": "ending_return_hollow",
+      "type": "narration",
+      "text": "You ride back toward Freedmen's Town. You don't know if it's still standing. You find out at dawn.",
+      "nextNodeId": "credits"
+    },
+
+    {
+      "id": "ending_retreat",
+      "type": "narration",
+      "text": "You lead the community north, into the dark. Somewhere ahead, there's land that hasn't been taken yet. You ride point.",
+      "nextNodeId": "credits"
+    },
+
+    {
+      "id": "credits",
+      "type": "end",
+      "text": "The Last Ride of Isaiah Free\n\nThis story was built with the Minority Narrative Engine Toolkit.\nBuilt for storytellers who carry something worth telling.\n\n— Thank the people who told you your first story.",
+      "triggers": [
+        { "type": "fire_event", "key": "story_complete" }
+      ]
+    }
+
+  ]
+}
